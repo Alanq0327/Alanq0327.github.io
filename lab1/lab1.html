@@ -139,10 +139,9 @@
     Figure 1.7. Note detected (E5).
   </figcaption>
 </figure>
-<h4 class="h6 mt-3">Code Snippet(only demonstrate the core codes)</h4>
+<h4 class="h6 mt-3">Code Snippet (core logic only)</h4>
 <pre class="bg-light border rounded p-3"><code>#include &lt;PDM.h&gt;
-#include <PDM.h>
-#include <math.h>
+#include &lt;math.h&gt;
 
 #define N   2048
 #define FS  16000
@@ -155,57 +154,14 @@ const float TH = 200.0f;
 volatile bool ready = false;
 volatile int  w = 0;
 int16_t buf[N], chunk[256];
-
-void onPDMdata() {
-  int n = PDM.available();
-  if (n <= 0) return;
-  if (n > (int)sizeof(chunk)) n = sizeof(chunk);
-
-  int bytes = PDM.read(chunk, n);
-  int m = bytes >> 1;
-
-  for (int i = 0; i < m; i++) {
-    buf[w++] = chunk[i];
-    if (w >= N) { w = 0; ready = true; break; }
-  }
-}
-
-float goertzel(const int16_t* x, float f) {
-  float w = 2.0f * PI * f / (float)FS;
-  float c = 2.0f * cosf(w);
-  float q0 = 0, q1 = 0, q2 = 0;
-
-  for (int i = 0; i < N; i++) { q0 = c*q1 - q2 + x[i]; q2 = q1; q1 = q0; }
-
-  float re = q1 - q2 * cosf(w);
-  float im = q2 * sinf(w);
-  return sqrtf(re*re + im*im);
-}
-
-void loop() {
-  if (!ready) { delay(5); return; }
-
-  static int16_t x[N];
-  noInterrupts();
-  for (int i = 0; i < N; i++) x[i] = buf[i];
-  ready = false;
-  interrupts();
-
-  float maxMag = 0, sum = 0; int best = -1;
-  for (int i = 0; i < K; i++) {
-    float m = goertzel(x, F[i]);
-    sum += m;
-    if (m > maxMag) { maxMag = m; best = i; }
-  }
-
-  if (best >= 0 && (maxMag - sum / K) > TH) {
-    Serial.print("NOTE DETECTED: ");
-    Serial.println(NM[best]);
-  }
-
-  delay(200);
-}
 </code></pre>
+<h4>Code Snippet (Gist)</h4>
+<p>
+  <a href="https://gist.github.com/Alanq0327/6eafb96eb058a2ef437db5176db00c25" target="_blank" rel="noopener">
+    Open on GitHub Gist
+  </a>
+</p>
+<script src="https://gist.github.com/Alanq0327/6eafb96eb058a2ef437db5176db00c25.js"></script>
 
 
 <section class="mt-5">
