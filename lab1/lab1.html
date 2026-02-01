@@ -356,9 +356,44 @@ print(s)</code></pre>
   then printed the latest parsed value to confirm correct parsing.
 </p>
 
+<h4 class="h6 mt-3">Code Snippet (core logic only)</h4>
+<pre class="bg-light border rounded p-3"><code class="language-python">import asyncio
 
-<h4 class="h6 mt-3">Code Snippet</h4>
-<script src="https://gist.github.com/Alanq0327/d278c220db0cda120589bfc9c207ebb5.js"></script>
+state = {"time_ms": None}
+ev = asyncio.Event()
+
+def rx_string_cb(sender, data):
+    msg = bytes(data).decode("utf-8", errors="ignore").strip("\x00").strip()
+    if msg.startswith("T:"):
+        state["time_ms"] = int(msg.split(":", 1)[1])
+        print("time_ms =", state["time_ms"])
+        ev.set()
+    else:
+        print("raw:", msg)
+
+uuid_rx = ble.uuid["RX_STRING"]
+uuid_tx_cmd = ble.uuid["TX_CMD_STRING"]
+
+try:
+    await ble.device.client.stop_notify(uuid_rx)
+except:
+    pass
+
+await ble.device.client.start_notify(uuid_rx, rx_string_cb)
+
+cmd_string = f"{CMD.GET_TIME_MILLIS.value}:"
+await ble.device.client.write_gatt_char(uuid_tx_cmd, cmd_string.encode("utf-8"), response=True)
+
+await asyncio.wait_for(ev.wait(), timeout=5.0)
+print("latest parsed =", state["time_ms"])</code></pre>
+
+<h4 class="h6 mt-3">Code Snippet (Gist)</h4>
+<p class="mt-2">
+  <a href="https://gist.github.com/Alanq0327/d278c220db0cda120589bfc9c207ebb5" target="_blank" rel="noopener">
+    Open on GitHub Gist
+  </a>
+</p>
+
 
       <figure class="mt-2 mb-0 text-center">
         <img class="img-fluid rounded border d-block mx-auto"
@@ -743,5 +778,6 @@ plt.show()</code></pre>
 
 </section>
 <!-- ===================== End Appendix ===================== -->
+
 
 
