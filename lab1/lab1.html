@@ -156,12 +156,13 @@ volatile int  w = 0;
 int16_t buf[N], chunk[256];
 </code></pre>
 <h4>Code Snippet (Gist)</h4>
+<h4>Code Snippet (Gist)</h4>
 <p>
-  <a href="https://gist.github.com/Alanq0327/6eafb96eb058a2ef437db5176db00c25" target="_blank" rel="noopener">
+  <a href="https://gist.github.com/Alanq0327/6eafb96eb058a2ef437db5176db00c25"
+     target="_blank" rel="noopener">
     Open on GitHub Gist
   </a>
 </p>
-<script src="https://gist.github.com/Alanq0327/6eafb96eb058a2ef437db5176db00c25.js"></script>
 
 
 <section class="mt-5">
@@ -358,36 +359,7 @@ print(s)</code></pre>
 
 
 <h4 class="h6 mt-3">Code Snippet</h4>
-<pre class="bg-light border rounded p-3"><code>import asyncio
-
-state = {"time_ms": None}
-ev = asyncio.Event()
-
-def rx_string_cb(sender, data):
-    msg = bytes(data).decode("utf-8", errors="ignore").strip("\x00").strip()
-    if msg.startswith("T:"):
-        state["time_ms"] = int(msg.split(":", 1)[1])
-        print("time_ms =", state["time_ms"])
-        ev.set()
-    else:
-        print("raw:", msg)
-
-uuid_rx = ble.uuid["RX_STRING"]
-uuid_tx_cmd = ble.uuid["TX_CMD_STRING"]
-
-try:
-    await ble.device.client.stop_notify(uuid_rx)
-except:
-    pass
-
-await ble.device.client.start_notify(uuid_rx, rx_string_cb)
-
-cmd_string = f"{CMD.GET_TIME_MILLIS.value}:"
-await ble.device.client.write_gatt_char(uuid_tx_cmd, cmd_string.encode("utf-8"), response=True)
-
-await asyncio.wait_for(ev.wait(), timeout=5.0)
-print("latest parsed =", state["time_ms"])
-</code></pre>
+<script src="https://gist.github.com/Alanq0327/d278c220db0cda120589bfc9c207ebb5.js"></script>
 
       <figure class="mt-2 mb-0 text-center">
         <img class="img-fluid rounded border d-block mx-auto"
@@ -430,6 +402,7 @@ I started a timed streaming loop on the Artemis (via START_TIME_STREAM) which pe
     </li>
 
     <h4 class="h6 mt-3">Code Snippet(only demonstrate core code) </h4>
+<h4 class="h6 mt-3">Code Snippet (core logic only)</h4>
 <pre class="bg-light border rounded p-3"><code>import asyncio, time
 
 async def task6_collect(duration_s=5.0):
@@ -481,9 +454,15 @@ async def task6_collect(duration_s=5.0):
     return vals, expected
 
 vals, expected = await task6_collect(5.0)
-print("expected =", expected, "| received =", len(vals))
+print("expected =", expected, "| received =", len(vals))</code></pre>
 
-</code></pre>
+<p class="mt-2">
+  <a href="https://gist.github.com/Alanq0327/4595200ed9a0511efe8aed486446bfce"
+     target="_blank" rel="noopener">
+    Open full code on GitHub Gist
+  </a>
+</p>
+
 
     <li class="mt-4">
       <b>Paired time + temperature arrays + GET_TEMP_READINGS.</b>
@@ -561,10 +540,14 @@ async def task7_core(duration_s=2.0, timeout_s=8.0):
         await asyncio.sleep(0.02)
 
     await ble.device.client.stop_notify(notify_uuid)
-    return time_list, temp_list
+    return time_list, temp_list</code></pre>
 
-
-</code></pre>
+<p class="mt-2">
+  <a href="https://gist.github.com/Alanq0327/46133edec1f60e074c15056888c73a32"
+     target="_blank" rel="noopener">
+    Open full code on GitHub Gist
+  </a>
+</p>
 
 
     <li class="mt-4">
@@ -751,191 +734,13 @@ plt.show()</code></pre>
 
   <!-- 2) Core Arduino Code -->
   <h3 class="h5 mt-4">2. Core Arduino code</h3>
+<p class="mt-2">
+  <a href="https://gist.github.com/Alanq0327/046ac50297228d0e614c70fdae58dfdc"
+     target="_blank" rel="noopener">
+    Arduino code (GitHub Gist)
+  </a>
+</p>
 
-
-<pre class="bg-light border rounded p-3"><code class="language-cpp">const int TIME_BUF_SIZE = 500;
-unsigned long time_buf[TIME_BUF_SIZE];
-float temp_buf[TIME_BUF_SIZE];
-int time_buf_len = 0;
-bool stream_time = false;
-
-static unsigned long last_stream_us = 0;
-const unsigned long STREAM_PERIOD_US = 5000;
-
-bool stream_seq = false;
-static unsigned long seq_period_us = 5000;
-static unsigned long next_seq_us = 0;
-static unsigned long seq_counter = 0;
-
-enum CommandTypes {
-  GET_TIME_MILLIS    = 6,
-  START_TIME_STREAM  = 7,
-  STOP_TIME_STREAM   = 8,
-  SEND_TIME_DATA     = 9,
-  GET_TEMP_READINGS  = 10,
-  PING_LEN           = 11,
-  START_SEQ_STREAM   = 12,
-  STOP_SEQ_STREAM    = 13,
-};
-
-static float read_temperature_c() {
-  return 25.0f + 0.01f * (millis() % 1000);
-}
-
-static void send_end_marker() {
-  BLE.poll(); delay(20); tx_characteristic_string.writeValue("END");
-  BLE.poll(); delay(20); tx_characteristic_string.writeValue("END");
-  BLE.poll(); delay(20);
-}
-
-static void stream_time_data() {
-  if (!stream_time) return;
-  if (time_buf_len >= TIME_BUF_SIZE) { stream_time = false; return; }
-
-  unsigned long now = micros();
-  if (STREAM_PERIOD_US && (now - last_stream_us) < STREAM_PERIOD_US) return;
-  last_stream_us = now;
-
-  time_buf[time_buf_len] = millis();
-  temp_buf[time_buf_len] = read_temperature_c();
-  time_buf_len++;
-
-  if (time_buf_len >= TIME_BUF_SIZE) stream_time = false;
-}
-
-static void stream_seq_data() {
-  if (!stream_seq) return;
-
-  unsigned long now = micros();
-  if ((int32_t)(now - next_seq_us) < 0) return;
-
-  next_seq_us += seq_period_us;
-  if ((int32_t)(now - next_seq_us) >= 0) next_seq_us = now + seq_period_us;
-
-  char msg[20];
-  snprintf(msg, sizeof(msg), "N:%08lu", (unsigned long)(seq_counter++));
-  tx_characteristic_string.writeValue(msg);
-}
-
-static void handle_command() {
-  robot_cmd.set_cmd_string(rx_characteristic_string.value(), rx_characteristic_string.valueLength());
-
-  bool ok;
-  int cmd_type = -1;
-  ok = robot_cmd.get_command_type(cmd_type);
-  if (!ok) return;
-
-  switch (cmd_type) {
-
-    case GET_TIME_MILLIS: {
-      char msg[32];
-      snprintf(msg, sizeof(msg), "T:%lu", millis());
-      tx_characteristic_string.writeValue(msg);
-      break;
-    }
-
-    case START_TIME_STREAM: {
-      time_buf_len = 0;
-      last_stream_us = 0;
-      stream_time = true;
-      break;
-    }
-
-    case STOP_TIME_STREAM: {
-      stream_time = false;
-      break;
-    }
-
-    case SEND_TIME_DATA: {
-      int n = time_buf_len;
-      char hdr[24];
-      snprintf(hdr, sizeof(hdr), "N:%d", n);
-      tx_characteristic_string.writeValue(hdr);
-      BLE.poll(); delay(30);
-
-      for (int i = 0; i < n; i++) {
-        char msg[24];
-        snprintf(msg, sizeof(msg), "T:%lu", time_buf[i]);
-        tx_characteristic_string.writeValue(msg);
-        BLE.poll(); delay(15);
-      }
-
-      send_end_marker();
-      break;
-    }
-
-    case GET_TEMP_READINGS: {
-      bool was_streaming = stream_time;
-      stream_time = false;
-
-      int n = time_buf_len;
-      char hdr[24];
-      snprintf(hdr, sizeof(hdr), "N:%d", n);
-      tx_characteristic_string.writeValue(hdr);
-      BLE.poll(); delay(30);
-
-      for (int i = 0; i < n; i++) {
-        float tC = temp_buf[i];
-        int whole = (int)tC;
-        int frac  = (int)roundf((tC - (float)whole) * 100.0f);
-        if (frac < 0) frac = -frac;
-        if (frac >= 100) { whole += (tC >= 0 ? 1 : -1); frac -= 100; }
-
-        char msg[48];
-        snprintf(msg, sizeof(msg), "T:%lu,C:%d.%02d", time_buf[i], whole, frac);
-        tx_characteristic_string.writeValue(msg);
-        BLE.poll(); delay(15);
-      }
-
-      send_end_marker();
-      stream_time = was_streaming;
-      break;
-    }
-
-    case PING_LEN: {
-      int L = 0;
-      ok = robot_cmd.get_next_value(L); if (!ok) return;
-      if (L < 1) L = 1;
-      if (L > (MAX_MSG_SIZE - 1)) L = (MAX_MSG_SIZE - 1);
-
-      static char b[MAX_MSG_SIZE];
-      for (int i = 0; i < L; i++) b[i] = 'A';
-      b[L] = '\0';
-      tx_characteristic_string.writeValue(b);
-      break;
-    }
-
-    case START_SEQ_STREAM: {
-      int p = 0;
-      ok = robot_cmd.get_next_value(p); if (!ok) return;
-      if (p < 200) p = 200;
-      seq_period_us = (unsigned long)p;
-      seq_counter = 0;
-      next_seq_us = micros();
-      stream_seq = true;
-      break;
-    }
-
-    case STOP_SEQ_STREAM: {
-      stream_seq = false;
-      break;
-    }
-
-    default: break;
-  }
-}
-
-void loop() {
-  BLEDevice central = BLE.central();
-  if (!central) return;
-
-  while (central.connected()) {
-    BLE.poll();
-    stream_time_data();
-    stream_seq_data();
-    if (rx_characteristic_string.written()) handle_command();
-  }
-}</code></pre>
 
 </section>
 <!-- ===================== End Appendix ===================== -->
