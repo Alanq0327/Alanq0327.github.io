@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Xingzhi Qian - Fast Robot</title>
+  <title>Xingzhi Qian - Fast Robots Course Portfolio</title>
   <style>
     :root {
       --text: #111827;
@@ -11,9 +11,13 @@
       --border: #e5e7eb;
       --bg: #ffffff;
       --card: #ffffff;
+      --soft: #f9fafb;
       --link: #2563eb;
       --linkHover: #1d4ed8;
+      --accent: #eef2ff;
+      --accentBorder: #c7d2fe;
     }
+
     body {
       margin: 0;
       background: var(--bg);
@@ -21,11 +25,13 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
       line-height: 1.6;
     }
+
     .container {
-      max-width: 880px;
+      max-width: 920px;
       margin: 48px auto;
       padding: 0 20px;
     }
+
     .header {
       display: grid;
       grid-template-columns: 220px 1fr;
@@ -36,6 +42,7 @@
       border-radius: 14px;
       background: var(--card);
     }
+
     .avatar {
       width: 220px;
       aspect-ratio: 3 / 4;
@@ -44,16 +51,27 @@
       border: 1px solid var(--border);
       background: #f3f4f6;
     }
+
     h1 {
       margin: 0 0 10px 0;
       font-size: 40px;
+      line-height: 1.15;
       letter-spacing: -0.02em;
     }
+
+    .subtitle {
+      margin: 0 0 12px 0;
+      font-size: 19px;
+      font-weight: 600;
+      color: #374151;
+    }
+
     .meta {
-      margin: 0;
+      margin: 3px 0;
       color: var(--muted);
       font-size: 16px;
     }
+
     .section {
       margin-top: 26px;
       padding: 22px;
@@ -61,10 +79,52 @@
       border-radius: 14px;
       background: var(--card);
     }
+
     .section h2 {
       margin: 0 0 12px 0;
-      font-size: 20px;
+      font-size: 21px;
+      letter-spacing: -0.01em;
     }
+
+    .section h3 {
+      margin: 18px 0 8px 0;
+      font-size: 17px;
+    }
+
+    .section p {
+      margin: 8px 0;
+    }
+
+    .note {
+      padding: 14px 16px;
+      border: 1px solid var(--accentBorder);
+      border-radius: 12px;
+      background: var(--accent);
+      color: #374151;
+      margin-top: 12px;
+    }
+
+    .highlights {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .highlights li {
+      margin: 6px 0;
+    }
+
+    .pipeline {
+      background: var(--soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre;
+    }
+
     .labs {
       list-style: none;
       padding: 0;
@@ -72,6 +132,7 @@
       display: grid;
       gap: 10px;
     }
+
     .labs a {
       display: block;
       padding: 12px 14px;
@@ -81,22 +142,51 @@
       text-decoration: none;
       background: #fafafa;
     }
+
     .labs a:hover {
       color: var(--linkHover);
-      border-color: #c7d2fe;
+      border-color: var(--accentBorder);
       background: #f5f7ff;
     }
 
+    .lab-title {
+      font-weight: 600;
+    }
+
+    .lab-desc {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 2px;
+    }
+
+    .footer {
+      margin: 26px 0 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
     @media (max-width: 720px) {
+      .container {
+        margin: 28px auto;
+      }
+
       .header {
         grid-template-columns: 1fr;
         text-align: left;
       }
+
       .avatar {
         width: 180px;
       }
+
       h1 {
         font-size: 34px;
+      }
+
+      .subtitle {
+        font-size: 17px;
       }
     }
   </style>
@@ -104,35 +194,170 @@
 
 <body>
   <div class="container">
+
     <div class="header">
       <img class="avatar" src="photo.jpg" alt="Photo of Xingzhi Qian" />
       <div>
         <h1>Xingzhi Qian</h1>
+        <p class="subtitle">Fast Robots Course Portfolio</p>
         <p class="meta">NetID: xq87 · Cornell M.Eng. ECE · Class of 2025</p>
         <p class="meta">Course: Fast Robots (ECE 5160)</p>
+        <p class="meta">ASML-supported hands-on embedded robotics course</p>
       </div>
+    </div>
+
+    <div class="section">
+      <h2>Course Portfolio Overview</h2>
+      <p>
+        This page summarizes my 12-lab project series in Cornell ECE5160 Fast Robots.
+        Across the course, I developed and tested an embedded robotic system that integrates
+        sensing, wireless communication, motor control, state estimation, mapping, localization,
+        path planning, and autonomous navigation on a real mobile robot platform.
+      </p>
+      <p>
+        The course is structured as a progressive robotics development sequence. Early labs focus on
+        board setup, Bluetooth communication, IMU and ToF sensing, and motor characterization.
+        Later labs build toward closed-loop control, Kalman-filter-based state estimation, mapping,
+        Bayes-filter-based localization, and final path planning and execution.
+      </p>
+      <div class="note">
+        This page is intended both as a course record for future students and as a compact project
+        portfolio demonstrating an end-to-end embedded robotics development workflow.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Technical Development Flow</h2>
+      <div class="pipeline">Lab 1-3:  Artemis board setup, Bluetooth communication, IMU sensing, and ToF sensing
+        ↓
+Lab 4-6:  Motor characterization, open-loop control, linear PID control, and orientation control
+        ↓
+Lab 7-8:  Kalman filtering, state estimation, high-speed control, and stunt execution
+        ↓
+Lab 9-10: Mapping, environment perception, and Bayes-filter-based grid localization
+        ↓
+Lab 11-12: Real-robot localization, path planning, motion execution, and final integration</div>
+    </div>
+
+    <div class="section">
+      <h2>Technical Highlights</h2>
+      <ul class="highlights">
+        <li>Integrated IMU, ToF sensing, motor control, BLE communication, onboard data logging, and offline Python analysis on an Artemis Nano-based robot.</li>
+        <li>Implemented PID-based distance and yaw control with gyro-bias calibration, derivative damping, and anti-windup protection.</li>
+        <li>Built Kalman-filter-based state estimation from noisy ToF measurements and robot dynamics identified through step-response experiments.</li>
+        <li>Performed yaw-controlled 360-degree mapping scans and Bayes-filter-based grid localization.</li>
+        <li>Integrated mapping, localization, path planning, and state-machine-based motion control into final autonomous navigation experiments.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Personal Note</h2>
+      <p>
+        I would like to thank Prof. E. Farrell Helbling and the TA team, especially Julie,
+        for their guidance throughout the course. Through this course, I gained hands-on
+        experience in embedded robotics, sensing, state estimation, control, localization,
+        and autonomous navigation.
+      </p>
+      <p>
+        I also appreciate Zenan Shao for lending me his robot and for inspiring some of my early thinking.
+        The final implementation, experiments, and analysis presented in these reports were developed
+        using my own approach.
+      </p>
     </div>
 
     <div class="section">
       <h2>Labs</h2>
       <ul class="labs">
-        <li><a href="lab1/lab1.html">Lab 1: The Artemis board and Bluetooth</a></li>
-                <li><a href="lab2/lab2.html">Lab 2: IMU</a></li>
-                <li><a href="lab3/lab3.html">Lab 3: ToF</a></li>
-        <li><a href="lab4/lab4.html">Lab 4: Motors and Open Loop Control</a></li>
-         <li><a href="lab5/lab5.html"> Lab 5: Linear PID control and Linear interpolation</a></li>
-        <li><a href="lab6/lab6.html"> Lab 6: Orientation Control</a></li>
-                <li><a href="lab7/lab7.html"> Lab 7: Kalman Filter</a></li>
-         <li><a href="lab8/lab8.html"> Lab 8: Stunts!</a></li>
-        <li><a href="lab9/lab9.html"> Lab 9: Mapping</a></li>
-          <li><a href="lab10/lab10.html"> Lab 10: Grid Localization using Bayes Filter</a></li>
-         <li><a href="lab11/lab11.html"> Lab 11: Localization on the real robot</a></li>
-              <li><a href="lab12/lab12.html"> Lab 12: Path Planning and Execution</a></li>
+        <li>
+          <a href="lab1/lab1.html">
+            <span class="lab-title">Lab 1: The Artemis Board and Bluetooth</span>
+            <span class="lab-desc">Board setup, BLE communication, and basic embedded system interaction.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab2/lab2.html">
+            <span class="lab-title">Lab 2: IMU</span>
+            <span class="lab-desc">IMU data acquisition, calibration, and orientation sensing.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab3/lab3.html">
+            <span class="lab-title">Lab 3: ToF</span>
+            <span class="lab-desc">Time-of-Flight distance sensing and sensor data characterization.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab4/lab4.html">
+            <span class="lab-title">Lab 4: Motors and Open-Loop Control</span>
+            <span class="lab-desc">Motor driver integration, PWM control, and open-loop motion experiments.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab5/lab5.html">
+            <span class="lab-title">Lab 5: Linear PID Control and Linear Interpolation</span>
+            <span class="lab-desc">Closed-loop distance control and interpolation-based sensing/control updates.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab6/lab6.html">
+            <span class="lab-title">Lab 6: Orientation Control</span>
+            <span class="lab-desc">Yaw estimation, gyro calibration, and closed-loop orientation control.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab7/lab7.html">
+            <span class="lab-title">Lab 7: Kalman Filter</span>
+            <span class="lab-desc">State estimation from noisy ToF measurements and robot motion dynamics.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab8/lab8.html">
+            <span class="lab-title">Lab 8: Stunts!</span>
+            <span class="lab-desc">High-speed control, stunt execution, state-machine logic, and onboard logging.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab9/lab9.html">
+            <span class="lab-title">Lab 9: Mapping</span>
+            <span class="lab-desc">Yaw-controlled 360-degree scanning and environment map generation.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab10/lab10.html">
+            <span class="lab-title">Lab 10: Grid Localization Using Bayes Filter</span>
+            <span class="lab-desc">Probabilistic localization with Bayes filtering and grid-based belief updates.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab11/lab11.html">
+            <span class="lab-title">Lab 11: Localization on the Real Robot</span>
+            <span class="lab-desc">Real-robot localization using sensor observations and probabilistic inference.</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="lab12/lab12.html">
+            <span class="lab-title">Lab 12: Path Planning and Execution</span>
+            <span class="lab-desc">Final integration of localization, path planning, motion execution, and analysis.</span>
+          </a>
+        </li>
       </ul>
     </div>
-   
 
-  
+    <p class="footer">
+      Cornell ECE5160 Fast Robots · 12-Lab Embedded Robotics Project Series
+    </p>
+
+  </div>
 </body>
 </html>
-
